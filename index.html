@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 문장 암기장</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
+        .sentence { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .translation { font-size: 18px; color: #666; margin-bottom: 20px; display: none; }
+        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 5px; transition: 0.3s; }
+        button:hover { background-color: #45a049; }
+        .btn-hint { background-color: #2196F3; }
+        .btn-hint:hover { background-color: #0b7dda; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="sentence" id="eng-text">Loading...</div>
+    <div class="translation" id="kor-text">로딩 중...</div>
+    
+    <button onclick="speak()">🔊 듣기</button>
+    <button class="btn-hint" onclick="toggleHint()">👁️ 뜻 보기</button>
+    <button onclick="nextSentence()">다음 문장 ➡️</button>
+</div>
+
+<script>
+    // 💡 여기에 원하는 문장과 뜻을 마음껏 추가하세요!
+    const data = [
+        { eng: "Practice makes perfect.", kor: "연습이 완벽을 만든다." },
+        { eng: "Actions speak louder than words.", kor: "말보다 행동이 중요하다." },
+        { eng: "Better late than never.", kor: "늦더라도 안 하는 것보다 낫다." },
+        { eng: "Where there is a will, there is a way.", kor: "뜻이 있는 곳에 길이 있다." }
+    ];
+
+    let currentIndex = 0;
+
+    function showSentence() {
+        document.getElementById('eng-text').innerText = data[currentIndex].eng;
+        document.getElementById('kor-text').innerText = data[currentIndex].kor;
+        document.getElementById('kor-text').style.display = 'none'; // 다음 문장 갈 때 뜻 숨기기
+    }
+
+    function speak() {
+        const text = data[currentIndex].eng;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US'; // 영어 발음 설정 (한국어는 ko-KR)
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleHint() {
+        const hint = document.getElementById('kor-text');
+        hint.style.display = (hint.style.display === 'none') ? 'block' : 'none';
+    }
+
+    function nextSentence() {
+        currentIndex = (currentIndex + 1) % data.length;
+        showSentence();
+    }
+
+    // 첫 실행
+    showSentence();
+</script>
+
+</body>
+</html>
