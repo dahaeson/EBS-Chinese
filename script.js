@@ -2,38 +2,47 @@
 // 기본 문장
 // ==========================
 
-let sentences = [
+let defaultSentences = [
 
 {
+    id: 1,
     chinese:"这家韩式紫菜包饭真不赖。",
     pinyin:"Zhè jiā Hánshì zǐcài bāofàn zhēn bú lài.",
-    korean:"이 한국식 김밥집 정말 괜찮다."
+    korean:"이 한국식 김밥집 정말 괜찮다.",
+    favorite:false
 },
 
 {
+    id: 2,
     chinese:"没想到在中国也能吃到这么地道的韩餐。",
     pinyin:"Méi xiǎngdào zài Zhōngguó yě néng chī dào zhème dìdao de Háncān.",
-    korean:"중국에서도 이렇게 정통 한국 음식을 먹을 수 있을 줄 몰랐다."
+    korean:"중국에서도 이렇게 정통 한국 음식을 먹을 수 있을 줄 몰랐다.",
+    favorite:false
 },
 
 {
+    id: 3,
     chinese:"今天工作特别忙。",
     pinyin:"Jīntiān gōngzuò tèbié máng.",
-    korean:"오늘 일이 정말 바빴다."
+    korean:"오늘 일이 정말 바빴다.",
+    favorite:false
 }
 
 ];
 
 // ==========================
-// 저장된 문장 불러오기
+// 저장 데이터 불러오기
 // ==========================
 
-const savedSentences =
+let savedData =
 JSON.parse(
     localStorage.getItem("mySentences")
 ) || [];
 
-sentences.push(...savedSentences);
+let sentences =
+savedData.length > 0
+? savedData
+: defaultSentences;
 
 // ==========================
 // 상태값
@@ -41,6 +50,19 @@ sentences.push(...savedSentences);
 
 let currentIndex = 0;
 let pinyinVisible = true;
+
+// ==========================
+// 저장
+// ==========================
+
+function saveData(){
+
+    localStorage.setItem(
+        "mySentences",
+        JSON.stringify(sentences)
+    );
+
+}
 
 // ==========================
 // 현재 문장 표시
@@ -59,16 +81,20 @@ function renderSentence(){
         return;
     }
 
+    const current =
+    sentences[currentIndex];
+
     document.getElementById("sentence").innerText =
-    sentences[currentIndex].chinese;
+    current.chinese;
 
     document.getElementById("pinyin").innerText =
     pinyinVisible
-    ? sentences[currentIndex].pinyin
+    ? current.pinyin
     : "";
 
     document.getElementById("meaning").innerText =
-    sentences[currentIndex].korean;
+    current.korean;
+
 }
 
 // ==========================
@@ -82,10 +108,13 @@ function nextSentence(){
     currentIndex++;
 
     if(currentIndex >= sentences.length){
+
         currentIndex = 0;
+
     }
 
     renderSentence();
+
 }
 
 // ==========================
@@ -98,21 +127,25 @@ function randomSentence(){
 
     currentIndex =
     Math.floor(
-        Math.random() * sentences.length
+        Math.random()
+        * sentences.length
     );
 
     renderSentence();
+
 }
 
 // ==========================
-// 병음 숨기기
+// 병음 표시/숨김
 // ==========================
 
 function togglePinyin(){
 
-    pinyinVisible = !pinyinVisible;
+    pinyinVisible =
+    !pinyinVisible;
 
     renderSentence();
+
 }
 
 // ==========================
@@ -131,7 +164,28 @@ function speakSentence(){
     utterance.lang = "zh-CN";
 
     speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
+    speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+// ==========================
+// 현재 문장 즐겨찾기
+// ==========================
+
+function toggleCurrentFavorite(){
+
+    if(sentences.length === 0) return;
+
+    sentences[currentIndex].favorite =
+    !sentences[currentIndex].favorite;
+
+    saveData();
+
+    renderSentence();
+    renderSentenceList();
+
 }
 
 // ==========================
@@ -160,45 +214,53 @@ function addSentence(){
 
     if(chinese === ""){
 
-        alert("중국어 문장을 입력하세요.");
+        alert(
+            "중국어 문장을 입력하세요."
+        );
+
         return;
     }
 
     const newSentence = {
 
+        id: Date.now(),
+
         chinese,
         pinyin,
-        korean
+        korean,
+
+        favorite:false
 
     };
 
-    sentences.push(newSentence);
+    sentences.push(
+        newSentence
+    );
 
-    saveCustomSentences();
+    saveData();
 
-    document.getElementById("newChinese").value="";
-    document.getElementById("newPinyin").value="";
-    document.getElementById("newKorean").value="";
+    document
+    .getElementById("newChinese")
+    .value = "";
+
+    document
+    .getElementById("newPinyin")
+    .value = "";
+
+    document
+    .getElementById("newKorean")
+    .value = "";
 
     renderSentenceList();
 
-    alert("저장 완료!");
-}
-
-// ==========================
-// 저장
-// ==========================
-
-function saveCustomSentences(){
-
-    localStorage.setItem(
-        "mySentences",
-        JSON.stringify(sentences)
+    alert(
+        "문장 저장 완료!"
     );
+
 }
 
 // ==========================
-// 목록 표시
+// 문장 목록 표시
 // ==========================
 
 function renderSentenceList(){
@@ -212,22 +274,34 @@ function renderSentenceList(){
 
     if(sentences.length === 0){
 
-        list.innerHTML =
-        '<div class="empty">저장된 문장이 없습니다.</div>';
+        list.innerHTML = `
+        <div class="empty">
+            저장된 문장이 없습니다.
+        </div>
+        `;
 
         return;
     }
 
     let html = "";
 
-    sentences.forEach((item,index)=>{
+    sentences.forEach(
+    (item,index)=>{
 
         html += `
 
         <div class="list-item">
 
             <div class="cn">
+
                 ${item.chinese}
+
+                ${
+                    item.favorite
+                    ? '<span class="favorite-mark">⭐</span>'
+                    : ''
+                }
+
             </div>
 
             <div class="py">
@@ -238,13 +312,29 @@ function renderSentenceList(){
                 ${item.korean || ""}
             </div>
 
-            <button
+            <div class="action-buttons">
+
+                <button
+                class="favorite-btn"
+                onclick="toggleFavorite(${index})">
+
+                ${
+                    item.favorite
+                    ? "⭐ 해제"
+                    : "☆ 즐겨찾기"
+                }
+
+                </button>
+
+                <button
                 class="delete-btn"
                 onclick="deleteSentence(${index})">
 
                 삭제
 
-            </button>
+                </button>
+
+            </div>
 
         </div>
 
@@ -253,6 +343,168 @@ function renderSentenceList(){
     });
 
     list.innerHTML = html;
+
+}
+
+// ==========================
+// 목록에서 즐겨찾기
+// ==========================
+
+function toggleFavorite(index){
+
+    sentences[index].favorite =
+    !sentences[index].favorite;
+
+    saveData();
+
+    renderSentenceList();
+
+}
+
+// ==========================
+// 즐겨찾기만 보기
+// ==========================
+
+function showFavorites(){
+
+    const list =
+    document.getElementById(
+        "sentenceList"
+    );
+
+    const favorites =
+    sentences.filter(
+        item => item.favorite
+    );
+
+    if(favorites.length === 0){
+
+        list.innerHTML = `
+        <div class="empty">
+            즐겨찾기 문장이 없습니다.
+        </div>
+        `;
+
+        return;
+    }
+
+    let html = "";
+
+    favorites.forEach(item=>{
+
+        html += `
+
+        <div class="list-item">
+
+            <div class="cn">
+                ${item.chinese}
+            </div>
+
+            <div class="py">
+                ${item.pinyin}
+            </div>
+
+            <div class="kr">
+                ${item.korean}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    list.innerHTML = html;
+
+}
+
+// ==========================
+// 검색
+// ==========================
+
+function searchSentences(){
+
+    const keyword =
+    document
+    .getElementById(
+        "searchInput"
+    )
+    .value
+    .trim()
+    .toLowerCase();
+
+    if(keyword === ""){
+
+        renderSentenceList();
+        return;
+
+    }
+
+    const result =
+    sentences.filter(item =>
+
+        item.chinese
+        .toLowerCase()
+        .includes(keyword)
+
+        ||
+
+        item.korean
+        .toLowerCase()
+        .includes(keyword)
+
+        ||
+
+        item.pinyin
+        .toLowerCase()
+        .includes(keyword)
+
+    );
+
+    const list =
+    document.getElementById(
+        "sentenceList"
+    );
+
+    if(result.length === 0){
+
+        list.innerHTML = `
+        <div class="empty">
+            검색 결과 없음
+        </div>
+        `;
+
+        return;
+    }
+
+    let html = "";
+
+    result.forEach(item=>{
+
+        html += `
+
+        <div class="list-item">
+
+            <div class="cn">
+                ${item.chinese}
+            </div>
+
+            <div class="py">
+                ${item.pinyin}
+            </div>
+
+            <div class="kr">
+                ${item.korean}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    list.innerHTML = html;
+
 }
 
 // ==========================
@@ -261,22 +513,33 @@ function renderSentenceList(){
 
 function deleteSentence(index){
 
+    const target =
+    sentences[index];
+
+    if(!target) return;
+
     if(
-        !confirm("이 문장을 삭제할까요?")
+        !confirm(
+            "이 문장을 삭제할까요?"
+        )
     ){
         return;
     }
 
     sentences.splice(index,1);
 
-    saveCustomSentences();
-
-    if(currentIndex >= sentences.length){
+    if(
+        currentIndex >=
+        sentences.length
+    ){
         currentIndex = 0;
     }
 
+    saveData();
+
     renderSentence();
     renderSentenceList();
+
 }
 
 // ==========================
@@ -295,18 +558,17 @@ function deleteAllSentences(){
 
     sentences = [];
 
-    localStorage.removeItem(
-        "mySentences"
-    );
-
     currentIndex = 0;
+
+    saveData();
 
     renderSentence();
     renderSentenceList();
+
 }
 
 // ==========================
-// CSV 가져오기
+// CSV 업로드
 // 형식:
 // 중국어,병음,뜻
 // ==========================
@@ -314,65 +576,81 @@ function deleteAllSentences(){
 function importCSV(){
 
     const file =
-    document.getElementById(
-        "csvFile"
-    ).files[0];
+    document
+    .getElementById("csvFile")
+    .files[0];
 
     if(!file){
 
-        alert("CSV 파일을 선택하세요.");
+        alert(
+            "CSV 파일을 선택하세요."
+        );
+
         return;
     }
 
     const reader =
     new FileReader();
 
-    reader.onload = function(e){
+    reader.onload =
+    function(e){
 
         const text =
         e.target.result;
 
         const rows =
-        text.split("\n");
+        text.split(/\r?\n/);
+
+        let added = 0;
 
         rows.forEach(row=>{
+
+            if(!row.trim()) return;
 
             const cols =
             row.split(",");
 
-            if(cols.length >= 3){
+            if(cols.length < 3) return;
 
-                const sentence = {
+            const sentence = {
 
-                    chinese:
-                    cols[0].trim(),
+                id:
+                Date.now()
+                + Math.random(),
 
-                    pinyin:
-                    cols[1].trim(),
+                chinese:
+                cols[0].trim(),
 
-                    korean:
-                    cols[2].trim()
+                pinyin:
+                cols[1].trim(),
 
-                };
+                korean:
+                cols[2].trim(),
 
-                if(sentence.chinese){
+                favorite:false
 
-                    sentences.push(
-                        sentence
-                    );
+            };
 
-                }
+            if(
+                sentence.chinese
+            ){
+
+                sentences.push(
+                    sentence
+                );
+
+                added++;
 
             }
 
         });
 
-        saveCustomSentences();
+        saveData();
 
         renderSentenceList();
 
         alert(
-            "CSV 업로드 완료!"
+            `${added}개 문장 업로드 완료`
         );
 
     };
@@ -381,6 +659,134 @@ function importCSV(){
         file,
         "UTF-8"
     );
+
+}
+
+// ==========================
+// XLSX 업로드
+// ==========================
+
+function importExcel(){
+
+    const file =
+    document
+    .getElementById("excelFile")
+    .files[0];
+
+    if(!file){
+
+        alert(
+            "엑셀 파일을 선택하세요."
+        );
+
+        return;
+    }
+
+    const reader =
+    new FileReader();
+
+    reader.onload =
+    function(e){
+
+        const data =
+        new Uint8Array(
+            e.target.result
+        );
+
+        const workbook =
+        XLSX.read(
+            data,
+            {
+                type:"array"
+            }
+        );
+
+        const sheet =
+        workbook.Sheets[
+            workbook.SheetNames[0]
+        ];
+
+        const rows =
+        XLSX.utils.sheet_to_json(
+            sheet,
+            {
+                header:1
+            }
+        );
+
+        let added = 0;
+
+        rows.forEach(row=>{
+
+            if(
+                row.length < 3
+            ){
+                return;
+            }
+
+            const chinese =
+            String(
+                row[0] || ""
+            ).trim();
+
+            const pinyin =
+            String(
+                row[1] || ""
+            ).trim();
+
+            const korean =
+            String(
+                row[2] || ""
+            ).trim();
+
+            if(!chinese){
+                return;
+            }
+
+            sentences.push({
+
+                id:
+                Date.now()
+                + Math.random(),
+
+                chinese,
+
+                pinyin,
+
+                korean,
+
+                favorite:false
+
+            });
+
+            added++;
+
+        });
+
+        saveData();
+
+        renderSentenceList();
+
+        alert(
+            `${added}개 문장 업로드 완료`
+        );
+
+    };
+
+    reader.readAsArrayBuffer(
+        file
+    );
+
+}
+
+// ==========================
+// 데이터 개수 확인
+// ==========================
+
+function getSentenceCount(){
+
+    return sentences.length;
+
 }
 
 // ==========================
@@ -389,3 +795,8 @@ function importCSV(){
 
 renderSentence();
 renderSentenceList();
+
+console.log(
+    "총 문장 수:",
+    getSentenceCount()
+);
