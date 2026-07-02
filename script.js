@@ -152,23 +152,31 @@ function togglePinyin(){
 // 중국어 음성
 // ==========================
 
-function speakSentence(){
+function speakSentence() {
 
-    if(sentences.length === 0) return;
+    const sentence =
+    sentences[currentIndex];
+
+    if(!sentence) return;
+
+    speechSynthesis.cancel();
 
     const utterance =
     new SpeechSynthesisUtterance(
-        sentences[currentIndex].chinese
+        sentence.chinese
     );
 
+    // 중국어 설정
     utterance.lang = "zh-CN";
 
-    speechSynthesis.cancel();
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
     speechSynthesis.speak(
         utterance
     );
-
 }
+    
 
 // ==========================
 // 현재 문장 즐겨찾기
