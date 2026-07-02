@@ -1,68 +1,250 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 문장 암기장</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
-        .sentence { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 10px; }
-        .translation { font-size: 18px; color: #666; margin-bottom: 20px; display: none; }
-        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 5px; transition: 0.3s; }
-        button:hover { background-color: #45a049; }
-        .btn-hint { background-color: #2196F3; }
-        .btn-hint:hover { background-color: #0b7dda; }
-    </style>
-</head>
-<body>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-<div class="card">
-    <div class="sentence" id="eng-text">Loading...</div>
-    <div class="translation" id="kor-text">로딩 중...</div>
-    
-    <button onclick="speak()">🔊 듣기</button>
-    <button class="btn-hint" onclick="toggleHint()">👁️ 뜻 보기</button>
-    <button onclick="nextSentence()">다음 문장 ➡️</button>
-</div>
+body{
+    font-family:-apple-system,BlinkMacSystemFont,
+    "Segoe UI",sans-serif;
 
-<script>
-    // 💡 여기에 원하는 문장과 뜻을 마음껏 추가하세요!
-    const data = [
-        { eng: "Practice makes perfect.", kor: "연습이 완벽을 만든다." },
-        { eng: "Actions speak louder than words.", kor: "말보다 행동이 중요하다." },
-        { eng: "Better late than never.", kor: "늦더라도 안 하는 것보다 낫다." },
-        { eng: "Where there is a will, there is a way.", kor: "뜻이 있는 곳에 길이 있다." }
-    ];
+    background:#f5f7fb;
 
-    let currentIndex = 0;
+    min-height:100vh;
 
-    function showSentence() {
-        document.getElementById('eng-text').innerText = data[currentIndex].eng;
-        document.getElementById('kor-text').innerText = data[currentIndex].kor;
-        document.getElementById('kor-text').style.display = 'none'; // 다음 문장 갈 때 뜻 숨기기
+    padding:20px;
+}
+
+.container{
+
+    max-width:900px;
+    margin:auto;
+}
+
+.header{
+
+    text-align:center;
+
+    margin-bottom:25px;
+}
+
+.header h1{
+
+    color:#2563eb;
+
+    font-size:32px;
+
+    font-weight:700;
+}
+
+.header p{
+
+    color:#64748b;
+
+    margin-top:8px;
+}
+
+.study-card{
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:40px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+    min-height:300px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+.cn{
+
+    font-size:42px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    text-align:center;
+
+    line-height:1.5;
+}
+
+.pinyin{
+
+    margin-top:12px;
+
+    color:#64748b;
+
+    font-size:22px;
+}
+
+.kr{
+
+    margin-top:25px;
+
+    font-size:22px;
+
+    color:#374151;
+
+    text-align:center;
+}
+
+.progress{
+
+    margin-top:20px;
+
+    height:10px;
+
+    background:#e5e7eb;
+
+    border-radius:99px;
+
+    overflow:hidden;
+}
+
+.progress-bar{
+
+    height:100%;
+
+    width:35%;
+
+    background:#2563eb;
+
+    border-radius:99px;
+}
+
+.button-group{
+
+    margin-top:25px;
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    justify-content:center;
+}
+
+button{
+
+    border:none;
+
+    background:#2563eb;
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 16px rgba(37,99,235,.25);
+}
+
+.secondary{
+
+    background:white;
+
+    color:#2563eb;
+
+    border:1px solid #dbeafe;
+}
+
+textarea{
+
+    width:100%;
+
+    border:1px solid #d1d5db;
+
+    border-radius:14px;
+
+    padding:15px;
+
+    margin-top:15px;
+
+    resize:vertical;
+
+    min-height:150px;
+
+    font-size:15px;
+}
+
+.date-input{
+
+    width:100%;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    border:1px solid #d1d5db;
+
+    margin-top:10px;
+}
+
+.hsk{
+
+    background:#fef3c7;
+
+    padding:2px 4px;
+
+    border-radius:6px;
+
+    color:#d97706;
+
+    font-weight:700;
+}
+
+.footer-nav{
+
+    margin-top:25px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:12px;
+}
+
+.footer-nav button{
+
+    min-width:110px;
+}
+
+@media(max-width:768px){
+
+    .cn{
+        font-size:30px;
     }
 
-    function speak() {
-        const text = data[currentIndex].eng;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US'; // 영어 발음 설정 (한국어는 ko-KR)
-        window.speechSynthesis.speak(utterance);
+    .kr{
+        font-size:18px;
     }
 
-    function toggleHint() {
-        const hint = document.getElementById('kor-text');
-        hint.style.display = (hint.style.display === 'none') ? 'block' : 'none';
+    .study-card{
+        padding:25px;
     }
 
-    function nextSentence() {
-        currentIndex = (currentIndex + 1) % data.length;
-        showSentence();
-    }
-
-    // 첫 실행
-    showSentence();
-</script>
-
-</body>
-</html>
+}
