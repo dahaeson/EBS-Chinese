@@ -16,15 +16,14 @@ const sentences = [
     chinese:"今天工作特别忙。",
     pinyin:"Jīntiān gōngzuò tèbié máng.",
     korean:"오늘 일이 정말 바빴다."
-},
-
-{
-    chinese:"你吃过韩国泡菜吗？",
-    pinyin:"Nǐ chīguo Hánguó pàocài ma?",
-    korean:"한국 김치 먹어본 적 있어?"
 }
 
 ];
+
+const savedData =
+JSON.parse(localStorage.getItem("mySentences")) || [];
+
+sentences.push(...savedData);
 
 let currentIndex = 0;
 let pinyinVisible = true;
@@ -34,13 +33,13 @@ function renderSentence(){
     document.getElementById("sentence").innerText =
         sentences[currentIndex].chinese;
 
-    document.getElementById("meaning").innerText =
-        sentences[currentIndex].korean;
-
     document.getElementById("pinyin").innerText =
         pinyinVisible
         ? sentences[currentIndex].pinyin
         : "";
+
+    document.getElementById("meaning").innerText =
+        sentences[currentIndex].korean;
 }
 
 function nextSentence(){
@@ -82,38 +81,19 @@ function speakSentence(){
     speechSynthesis.speak(utterance);
 }
 
-renderSentence();
-<h2 style="margin-top:30px;">문장 추가</h2>
-
-<input id="newChinese" placeholder="중국어 문장">
-
-<input id="newPinyin" placeholder="병음">
-
-<input id="newKorean" placeholder="한국어 뜻">
-
-<button onclick="addSentence()">
-문장 저장
-</button>
-
-
-const savedData =
-JSON.parse(localStorage.getItem("mySentences"));
-
-if(savedData){
-    sentences.push(...savedData);
-}
 function addSentence(){
 
     const chinese =
-    document.getElementById("newChinese").value;
+        document.getElementById("newChinese").value.trim();
 
     const pinyin =
-    document.getElementById("newPinyin").value;
+        document.getElementById("newPinyin").value.trim();
 
     const korean =
-    document.getElementById("newKorean").value;
+        document.getElementById("newKorean").value.trim();
 
-    if(!chinese){
+    if(chinese === ""){
+
         alert("중국어 문장을 입력하세요.");
         return;
     }
@@ -127,16 +107,22 @@ function addSentence(){
     sentences.push(newSentence);
 
     const customSentences =
-        sentences.slice(4);
+        JSON.parse(
+            localStorage.getItem("mySentences")
+        ) || [];
+
+    customSentences.push(newSentence);
 
     localStorage.setItem(
         "mySentences",
         JSON.stringify(customSentences)
     );
 
-    alert("저장 완료!");
+    document.getElementById("newChinese").value = "";
+    document.getElementById("newPinyin").value = "";
+    document.getElementById("newKorean").value = "";
 
-    document.getElementById("newChinese").value="";
-    document.getElementById("newPinyin").value="";
-    document.getElementById("newKorean").value="";
+    alert("저장 완료!");
 }
+
+renderSentence();
