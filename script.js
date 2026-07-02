@@ -83,3 +83,14 @@ function speakSentence(){
 }
 
 renderSentence();
+<h2 style="margin-top:30px;">문장 추가</h2>
+
+<input id="newChinese" placeholder="중국어 문장">
+
+<input id="newPinyin" placeholder="병음">
+
+<input id="newKorean" placeholder="한국어 뜻">
+
+<button onclick="addSentence()">
+문장 저장
+</button>
