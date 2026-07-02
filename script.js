@@ -94,3 +94,49 @@ renderSentence();
 <button onclick="addSentence()">
 문장 저장
 </button>
+
+
+const savedData =
+JSON.parse(localStorage.getItem("mySentences"));
+
+if(savedData){
+    sentences.push(...savedData);
+}
+function addSentence(){
+
+    const chinese =
+    document.getElementById("newChinese").value;
+
+    const pinyin =
+    document.getElementById("newPinyin").value;
+
+    const korean =
+    document.getElementById("newKorean").value;
+
+    if(!chinese){
+        alert("중국어 문장을 입력하세요.");
+        return;
+    }
+
+    const newSentence = {
+        chinese,
+        pinyin,
+        korean
+    };
+
+    sentences.push(newSentence);
+
+    const customSentences =
+        sentences.slice(4);
+
+    localStorage.setItem(
+        "mySentences",
+        JSON.stringify(customSentences)
+    );
+
+    alert("저장 완료!");
+
+    document.getElementById("newChinese").value="";
+    document.getElementById("newPinyin").value="";
+    document.getElementById("newKorean").value="";
+}
