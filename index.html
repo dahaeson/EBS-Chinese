@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중국어 문장 암기</title>
 
-    <title>중국어 문장 암기</title>
-
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -15,7 +14,7 @@
 
     <div class="header">
         <h1>📚 중국어 문장 암기</h1>
-        <p>반복 듣기 · 병음 보기 · 쉐도잉</p>
+        <p>문장 · 병음 · 뜻 · TTS 학습</p>
     </div>
 
     <div class="card">
@@ -28,23 +27,40 @@
 
         <div class="button-group">
 
-            <button onclick="speakSentence()">
-                🔊 듣기
-            </button>
+            <button onclick="speakSentence()">🔊 듣기</button>
 
-            <button onclick="nextSentence()">
-                다음 문장
-            </button>
+            <button onclick="nextSentence()">다음 문장</button>
 
-            <button onclick="togglePinyin()">
-                병음 보기/숨기기
-            </button>
+            <button onclick="togglePinyin()">병음 숨기기</button>
 
-            <button onclick="randomSentence()">
-                랜덤
-            </button>
+            <button onclick="randomSentence()">랜덤</button>
 
         </div>
+
+    </div>
+
+    <div class="card add-card">
+
+        <h2>✏️ 문장 추가</h2>
+
+        <input
+            type="text"
+            id="newChinese"
+            placeholder="중국어 문장">
+
+        <input
+            type="text"
+            id="newPinyin"
+            placeholder="병음">
+
+        <input
+            type="text"
+            id="newKorean"
+            placeholder="한국어 뜻">
+
+        <button onclick="addSentence()">
+            문장 저장
+        </button>
 
     </div>
 
