@@ -154,27 +154,35 @@ function togglePinyin(){
 
 function speakSentence() {
 
-    const sentence =
-    sentences[currentIndex];
+    const sentence = sentences[currentIndex];
 
-    if(!sentence) return;
+    if (!sentence) return;
 
     speechSynthesis.cancel();
 
-    const utterance =
-    new SpeechSynthesisUtterance(
+    const utterance = new SpeechSynthesisUtterance(
         sentence.chinese
     );
 
-    // 중국어 설정
-    utterance.lang = "zh-CN";
+    const voices = speechSynthesis.getVoices();
 
+    // 중국 본토 음성 찾기
+    const chineseVoice = voices.find(
+        voice => voice.lang === "zh-CN"
+    );
+
+    console.log("선택된 음성:", chineseVoice);
+
+    if (chineseVoice) {
+        utterance.voice = chineseVoice;
+    }
+
+    utterance.lang = "zh-CN";
     utterance.rate = 0.9;
     utterance.pitch = 1;
+    utterance.volume = 1;
 
-    speechSynthesis.speak(
-        utterance
-    );
+    speechSynthesis.speak(utterance);
 }
     
 
